@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block title %} Детали поста {% endblock %}
+
+{% block content %}
+<div class="post-detail card mb-4 p-4 border rounded shadow-sm">
+    <h2>{{ post.author.full_name }}</h2>
+    <p><strong>Автор:</strong> {{ post.author }}</p>
+    <p><strong>Дата создания:</strong> {{ post.date_posted }}</p>
+    <p><strong>Содержание:</strong> {{ post.content }}</p>
+    <p><strong>Лайки:</strong> {{ post.total_likes }}</p>
+    {% if user.is_authenticated and user == post.author %}
+        <div class="d-flex mb-3">
+            <a href="{% url 'post-change' post.id %}" class="btn btn-primary mr-3">Редактировать</a>
+            <a href="{% url 'post-delete' post.id %}" class="btn btn-danger">Удалить</a>
+        </div>
+    {% endif %}
+
+    <h5>Комментарии:</h5>
+    {% for comment in comments %}
+        <div class="comment mb-3 p-3 border rounded">
+            <span class="fw-bold mb-1">{{ comment.author.name }}</span>
+            <span class="text-muted small mb-2">{{ comment.created }}</span>
+            <p>{{ comment.content }}</p>
+            {% if user == comment.author %}
+                <div class="d-flex mb-3">
+                    <a href="{% url 'comment-change' comment.id %}" class="btn btn-primary mr-3">Редактировать</a>
+                    <a href="{% url 'comment-delete' comment.id %}" class="btn btn-danger">Удалить</a>
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+
+    {% if user.is_authenticated %}
+    <h5>Оставить комментарий:</h5>
+    <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form comment_form %}
+        <button type="submit" class="btn btn-primary">Добавить комментарий</button>
+    </form>
+    {% else %}
+        <p>Чтобы оставить комментарий, нужно <a href="{% url 'login' %}">войти</a></p>
+    {% endif %}
+</div>
+{% endblock %}

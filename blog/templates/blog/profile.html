@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %} Профиль {% endblock %}
+
+{% block content %}
+
+  <div class="container mt-3 text-center">
+    <h1 class="mb-3">Профиль пользователя {{ user.username }}</h1>
+
+    {% if user.is_superuser %}
+      <p class="text-info">Вы администратор данного сайта</p>
+    {% else %}
+      <div class="d-flex flex-column align-items-center mb-4">
+        <img src="{{ user.avatar.url }}" alt="Аватар пользователя" class="rounded-circle mb-3" style="width: 100px; height: 100px;">
+        <p><strong>Логин:</strong> {{ user.username }}</p>
+        <p><strong>Имя:</strong> {{ user.name }}</p>
+        <p><strong>О себе:</strong> {{ user.bio }}</p>
+      </div>
+    {% endif %}
+
+    <div class="d-flex justify-content-center">
+      <a href="{% url 'profile-delete' %}" class="btn btn-danger mr-5">Удалить профиль</a>
+      <a href="{% url 'profile-change' %}" class="btn btn-primary">Изменить профиль</a>
+    </div>
+  </div>
+
+{% if posts %}
+<ul class="list-unstyled">
+    {% for post in posts %}
+    <li class="media my-5 p-3 border rounded shadow-sm">
+      <a href="{% url 'post-detail' post.id %}">
+        <div class="media-body">
+            <h3><a href="{% url 'post-detail' post.id %}" class="text-dark">{{ post.content|truncatechars:50 }}</a></h3>
+            <p class="text-muted">Автор: {{ post.author.name }}</p>
+            <p class="text-muted">Создано: {{ post.date_posted }}</p>
+            <p class="font-weight-bold">Лайки: {{ post.total_likes }}</p>
+            <p class="font-weight-bold">Комментарии: {{ post.total_comments }}</p>
+            <div class="text-right">
+                <a href="{% url 'post-change' post.id %}" class="btn btn-outline-primary">Редактировать</a>
+                <a href="{% url 'post-delete' post.id %}" class="btn btn-danger">Удалить</a>
+            </div>
+        </div>
+      </a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>У вас пока нет постов.</p>
+{% endif %}
+
+
+{% endblock %}

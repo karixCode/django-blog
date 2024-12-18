@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+
+{% block content %}
+
+{% for post in page %}
+<div class="post-card mb-4 p-4 border rounded shadow-sm">
+    <p><strong>{{ post.author.full_name }}</strong></p>
+    <p>{{ post.created_at }}</p>
+    <p>{{ post.content }}</p>
+    <p>Лайки: {{ post.total_likes }}</p>
+    <p>Комментарии: {{ post.total_comments }}</p>
+    <a href="{% url 'post-detail' post.id %}" class="btn btn-info">Подробнее</a>
+
+    {% if user.is_authenticated %}
+        <form action="{% url 'like-post' post.id %}" method="post" class="mt-2">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-secondary">
+            {% if request.user in post.likes.all %}
+                Убрать лайк
+            {% else %}
+                Лайк
+            {% endif %}
+        </button>
+    </form>
+    {% endif %}
+</div>
+{% endfor %}
+
+{% bootstrap_pagination page url=keyword %}
+
+{% endblock %}
